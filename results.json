@@ -1,0 +1,61 @@
+{
+  "name": "Nihar",
+  "roll_no": "24b2467",
+  "seed": 42,
+  "gpu_used": "2 x Tesla T4 (Kaggle GPU T4 x2; compute on cuda:0)",
+  "task1": {
+    "bm25_settings": "Okapi BM25 (own scipy implementation), k1=1.2, b=0.3, idf=log(1+(N-df+0.5)/(df+0.5)); doc = title + abstract; lowercase \\w+ tokens, sklearn English stop-words removed, Porter stemming=on; grid k1 x b x stemming (72 configs) tuned on val nDCG@10",
+    "val_ndcg10": 0.868
+  },
+  "task2": {
+    "general_model": "BAAI/bge-large-en-v1.5",
+    "scientific_model": "ncbi/MedCPT-Query-Encoder + ncbi/MedCPT-Article-Encoder (MedCPT asymmetric biomedical bi-encoder)",
+    "val_ndcg10_general": 0.9328,
+    "val_ndcg10_scientific": 0.8509,
+    "index_time_sec": {
+      "general": 81.34,
+      "scientific": 24.16
+    },
+    "query_latency_ms": {
+      "general": 21.82,
+      "scientific": 11.47
+    },
+    "memory_mb": {
+      "general": 2271.9,
+      "scientific": 6520.3
+    },
+    "general_model_selection": {
+      "BAAI/bge-large-en-v1.5": 0.9328,
+      "BAAI/bge-base-en-v1.5": 0.8976
+    }
+  },
+  "task3": {
+    "hybrid_method": "weighted score interpolation of per-claim z-normalised scores over the full corpus: 0.1*BM25 + 0.9*bge-large-en-v1.5 (weights grid-searched on val, also compared against weighted RRF)",
+    "reranker_model": "ncbi/MedCPT-Cross-Encoder",
+    "rerank_top_k": 10,
+    "val_ndcg10_hybrid": 0.9388,
+    "val_ndcg10_rerank": 0.9149,
+    "rerank_query_latency_ms": 72.21
+  },
+  "task4": {
+    "base_model": "BAAI/bge-large-en-v1.5",
+    "val_ndcg10_random_negatives": 0.9169,
+    "val_ndcg10_hard_negatives": 0.9303
+  },
+  "task5": {
+    "retriever_used": "hybrid weighted score interpolation of per-claim z-normalised scores over the full corpus: 0.2*BM25 + 0.1*MedCPT + 0.7*bge-large-en-v1.5-ft-hard (weights grid-searched on val, also compared against weighted RRF)",
+    "nli_model": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli; verifier = average of abstract-level finetuned NLI and rationale-sentence fine-tuned NLI; sentence selector = ncbi/MedCPT-Cross-Encoder (fine-tuned)",
+    "zero_shot_or_finetuned": "finetuned",
+    "val_f1": 0.7542
+  },
+  "report_q1": {
+    "bm25_wins": [
+      673,
+      34
+    ],
+    "general_wins": [
+      766,
+      541
+    ]
+  }
+}
